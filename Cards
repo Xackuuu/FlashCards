@@ -1,0 +1,165 @@
+package flashcards;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.*;
+
+
+public class Main {
+    static Map<String, String> myCards = new LinkedHashMap<>();
+    static String fileName;
+    static List <String> stringTerAndDef = new ArrayList<>();
+    static List <String> termin = new ArrayList<>();
+    static List <String> definition = new ArrayList<>();
+
+    static String input(){
+        Scanner scanner = new Scanner(System.in);
+        String input = scanner.nextLine();
+        return input;
+    }
+    static void remove() throws IOException {
+        System.out.println("The card");
+        String remove = input();
+        if (myCards.containsKey(remove)){
+            myCards.remove(remove);
+            System.out.println("The card has been removed.");
+        } else {
+            System.out.println("Can't remove \"" + remove + "\": there is no such card.");
+        }
+        action();
+    }
+    static void imPORT() throws IOException {
+        System.out.println("File name:");
+        fileName = "C:\\Users\\pleti\\Desktop\\" + input();
+        File file = new File(fileName);
+        try (Scanner scanner = new Scanner(file)) {
+            int ind = 0;
+            while (scanner.hasNext()) {
+                String allString = scanner.nextLine();
+                stringTerAndDef.add(allString);
+            }
+            int i = 0;
+            int y = 0;
+            while (i < stringTerAndDef.size()) {
+                if (i % 2 == 0) {
+                    termin.add(stringTerAndDef.get(i));
+                }
+                if (i % 2 != 0) {
+                    definition.add(stringTerAndDef.get(i));
+                }
+                i++;
+            }
+            while (y < termin.size()){
+                if (!myCards.containsKey(termin.get(y))){
+                    myCards.put(termin.get(y), definition.get(y));
+                    ind++;
+                } else {
+                    myCards.put(termin.get(y), definition.get(y));
+                    ind++;
+                }
+                y++;
+            }
+            System.out.println(ind + " cards have been saved.");
+            action();
+        } catch (FileNotFoundException e) {
+            System.out.println("No file found: " + fileName);
+            action();
+        }
+    }
+    static void export() throws IOException {
+        System.out.println("File name:");
+        String newFile = "C:\\Users\\pleti\\Desktop\\" + input();
+        File file = new File(newFile);
+        FileWriter writer = new FileWriter(file);
+        int ind = 0;
+        for (Map.Entry<String, String> product : myCards.entrySet()) {
+            writer.write(product.getKey() + "\n");
+            writer.write(product.getValue() + "\n");
+            ind++;
+        }
+        System.out.println(ind + " cards have been loaded.");
+        writer.close();
+        action();
+    }
+    static void ask() throws IOException {
+        Random random = new Random();
+        System.out.println("How many times to ask?");
+        int randomInt = Integer.parseInt(input());
+        List <String> keys = new ArrayList<>(myCards.keySet());
+        List <String> value = new ArrayList<>(myCards.values());
+        int x = 0;
+        while (x < randomInt) {
+            String ranKey = keys.get(random.nextInt(keys.size()));
+            System.out.println("Print the definition of \"" + ranKey + "\":");
+            String answer = input();
+            if (answer.equals(myCards.get(ranKey))){
+                System.out.println("Correct answer");
+                x++;
+            } else{
+                int indexKey = value.indexOf(answer);
+                int correctAnswerIndex = keys.indexOf(ranKey);
+                if (value.contains(answer)){
+
+                    System.out.println("Wrong answer. " +
+                            "The correct one is \"" + value.get(correctAnswerIndex) +"\", you've just written the " +
+                            "definition of \"" + keys.get(indexKey) + "\".");
+                    x++;
+                } else {
+                    System.out.println("Wrong answer. The correct one is \"" + value.get(correctAnswerIndex) +"\".");
+                    x++;
+                }
+            }
+        }
+        action();
+    }
+    static void exit(){
+        System.out.println("Bye bye!");
+    }
+    static void action() throws IOException {
+        System.out.println("Input the action (add, remove, import, export, ask, exit):");
+        String action = input().toLowerCase();
+        switch (action){
+            case "add":
+                add();
+                break;
+            case "remove":
+                remove();
+                break;
+            case "import":
+                imPORT();
+                break;
+            case "export":
+                export();
+                break;
+            case "ask":
+                ask();
+                break;
+            case "exit":
+                exit();
+                break;
+            default:
+                System.out.println("Incorect input");
+                action();
+        }
+    }
+
+    static void add() throws IOException {
+        System.out.println("The card:");
+        String ter = input();
+        if (myCards.containsKey(ter)){
+            System.out.println("The card \""+ ter + "\" already exists.");
+        }
+        System.out.println("The definition of the card:");
+        String def = input();
+        if (myCards.containsValue(def)){
+            System.out.println("The definition \""+ def +"\" already exists.");
+        }
+        myCards.put(ter, def);
+        System.out.println("The pair (\""+ ter + "\":\""+ def +"\") has been added.");
+        action();
+    }
+    public static void main(String[] args) throws IOException {
+        action();
+    }
+}
